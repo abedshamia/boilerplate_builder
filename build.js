@@ -166,7 +166,7 @@ const buildBoilerplate = project => {
 
   writeEnvFile();
   writeCustomErrorFile();
-
+  writeErrorHandlerFile();
   //Build README.md
 
   const readme = `# Project Boilerplate Builder
@@ -226,8 +226,8 @@ function writeAppFile() {
   const appFile = `const express = require('express');
 const { join } = require('path');
 const cookieParser = require('cookie-parser');
-const app = express();
 const errorHandler = require('./middlewares/errorHandler');
+const app = express();
 app.use(cookieParser());
 app.disable('x-powered-by');
 app.use(express.urlencoded({ extended: false }));
@@ -342,9 +342,9 @@ rl.question('What is your project name? ', projectName => {
 });
 
 function writeEnvFile() {
-  const envFile = `  DEV_DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres,
-    DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres,
-    TEST_DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres_test,
+  const envFile = `DEV_DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
+    DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
+    TEST_DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres_test
     JWT_SECRET=Shhh Secret`;
 
   fs.writeFileSync(`${project}/.env`, envFile, 'utf8');
@@ -362,4 +362,19 @@ function writeCustomErrorFile() {
       `;
 
   fs.writeFileSync(`${project}/src/errors/customError.js`, errorFile, 'utf8');
+}
+
+function writeErrorHandler() {
+  const errorHandler = `const errorHandler = (err, req, res, next) => {
+        const error = new Error(err);
+        const status = error.status || 500;
+        res.status(status).json({
+            status,
+            message: error.message,
+        })
+    }
+    
+    module.exports = errorHandler;`;
+
+  fs.writeFileSync(`${project}/src/middlewares/errorHandler.js`, errorHandler, 'utf8');
 }
