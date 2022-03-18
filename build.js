@@ -364,17 +364,23 @@ function writeCustomErrorFile() {
   fs.writeFileSync(`${project}/src/errors/customError.js`, errorFile, 'utf8');
 }
 
-function writeErrorHandler() {
+function writeErrorHandlerFile() {
   const errorHandler = `const errorHandler = (err, req, res, next) => {
-        const error = new Error(err);
-        const status = error.status || 500;
-        res.status(status).json({
-            status,
-            message: error.message,
-        })
+    if (err.code) {
+      res.status(err.code).json({
+        status: err.code,
+        message: err.message,
+      });
+    } else {
+      res.status(500).json({
+        status: 500,
+        message: err.message,
+      });
     }
-    
-    module.exports = errorHandler;`;
+  };
+  
+  module.exports = errorHandler;
+  `;
 
   fs.writeFileSync(`${project}/src/middlewares/errorHandler.js`, errorHandler, 'utf8');
 }
