@@ -153,7 +153,7 @@ const buildBoilerplate = project => {
     scripts: {
       start: 'cross-env NODE_ENV=production node src/server.js',
       dev: 'cross-env NODE_ENV=development nodemon src/server.js',
-      build: 'node src/database/config/build.js',
+      build: 'cross-env NODE_ENV=development node src/database/config/build.js',
       test: 'jest',
     },
   };
@@ -161,40 +161,47 @@ const buildBoilerplate = project => {
   fs.writeFileSync(`${project}/package.json`, JSON.stringify(packageJson, null, 2), 'utf8');
 
   gitignore.forEach(file => {
-    fs.writeFileSync(`${project}/.gitignore`, `${file}`, 'utf8');
+    fs.appendFileSync(`${project}/.gitignore`, `${file}\n`, 'utf8');
   });
 
-  writeEnvFile();
-  writeCustomErrorFile();
-  writeErrorHandlerFile();
-  //Build README.md
+  rl.question('Your PostgreSQL username: ', username => {
+    rl.question('Your PostgreSQL password: ', password => {
+      rl.question('Your PostgreSQL database name: ', database => {
+        writeEnvFile(username, password, database);
 
-  const readme = `# Project Boilerplate Builder
+        writeCustomErrorFile();
+        writeErrorHandlerFile();
+        //Build README.md
+
+        const readme = `# Project Boilerplate Builder
 
     Thanks for using this boilerplate builder!
 
     Done by, [Abedalrahman Shamia](https://github.com/abedshamia)`;
 
-  fs.writeFileSync(`${project}/README.md`, readme, 'utf8');
+        fs.writeFileSync(`${project}/README.md`, readme, 'utf8');
 
-  rl.question('You want to install packages? (y/n) ', answer => {
-    if (answer === 'y') {
-      npmInstallPackages(packages);
-      npmInstallDevPackages(devPackages);
-      console.log('Done!');
-      openProject();
-    } else {
-      openProject();
-    }
+        rl.question('You want to install packages? (y/n) ', answer => {
+          if (answer === 'y') {
+            npmInstallPackages(packages);
+            npmInstallDevPackages(devPackages);
+            console.log('Done!');
+            openProject();
+          } else {
+            openProject();
+          }
+        });
+
+        // Open the project in visual studio code
+        const openProject = () => {
+          console.log('Opening project...');
+          const command = `code ${project}`;
+          child_process.execSync(command, {stdio: 'inherit'});
+          rl.close();
+        };
+      });
+    });
   });
-
-  // Open the project in visual studio code
-  const openProject = () => {
-    console.log('Opening project...');
-    const command = `code ${project}`;
-    child_process.execSync(command, {stdio: 'inherit'});
-    rl.close();
-  };
 };
 
 function writeServerfile() {
@@ -246,7 +253,7 @@ module.exports = app;
 function writeConfigDatabaseFile() {
   const connection = `
   const { Pool } = require("pg");
-    const { NODE_ENV, DATABASE_URL, DEV_DATABASE_URL } = process.env;
+    const { NODE_ENV, DATABASE_URL, DEV_DATABASE_URL, TEST_DATABASE_URL} = process.env;
     let URL;
     let SSL;
     
@@ -341,11 +348,11 @@ rl.question('What is your project name? ', projectName => {
   buildBoilerplate(project);
 });
 
-function writeEnvFile() {
-  const envFile = `DEV_DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
-    DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
-    TEST_DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres_test
-    JWT_SECRET=Shhh Secret`;
+function writeEnvFile(username, password, database_name) {
+  const envFile = `DEV_DATABASE_URL=postgres://${username}:${password}@localhost:5432/${database_name}
+DATABASE_URL=postgres://${username}:${password}@localhost:5432/${database_name}
+TEST_DATABASE_URL=postgres://${username}:${password}@localhost:5432/${database_name}_test
+JWT_SECRET=Shhh Secret`;
 
   fs.writeFileSync(`${project}/.env`, envFile, 'utf8');
 }
