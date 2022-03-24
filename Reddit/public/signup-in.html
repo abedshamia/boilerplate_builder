@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/login.css">
+    <title>Reddit | Sign up or Login</title>
+  </head>
+  <body>
+    <header>
+      <img src="/images/logo.png" />
+      <p class="header-title">Sign up or log in</p>
+    </header>
+    <main>
+      <div class="container">
+          <div class="forms-container">
+
+          
+        <div class="sign-up-container">
+          <p class="title">Create a new account</p>
+          <form id="sign-up" class="sign-up-form">
+            <input type="text" name="username" class="form-control" placeholder="choose a username" />
+            <input type="password" name="password" class="form-control" placeholder="password" />
+            <input type="password" name="confirm_password" class="form-control" placeholder="confirm password"/>
+            <input type="email" name="email" class="form-control" placeholder="email" />
+            <button class="btn sign-up-btn">Sign Up</button>
+          </form>
+        </div>
+
+        <div class="login-container">
+          <p class="title">Log In</p>
+          <form action="" id="login" class="login-form">
+            <input type="text" name="username" class="form-control" placeholder="username" />
+            <input type="password" name="password" class="form-control" placeholder="password" />
+            <div class="row">
+                <input type="checkbox" placeholder="remember me" name="remember" id="remember" value="isRememberMe"/> <label for="remember">remember me</label>
+
+            </div>
+
+            <button class="btn login-btn">Log in</button>
+        </div>
+    </div>
+    <p class="terms">By signing up, you agree to our Terms and that you have read our Privacy Policy and Content Policy.</p>
+    </div>
+    </main>
+    <script src="/js/login.js"></script>
+  </body>
+</html>

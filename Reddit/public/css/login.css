@@ -1,0 +1,132 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+header {
+  padding-left: 1.2rem;
+  height: 65px;
+  background-color: #e0efff;
+  display: flex;
+  align-items: flex-end;
+  gap: 1.2rem;
+}
+
+header img {
+  width: 60px;
+}
+
+.header-title {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.container {
+  margin-top: 3.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 2.4rem 3.2rem;
+}
+
+.forms-container {
+  display: flex;
+  gap: 8.2rem;
+  width: 80%;
+}
+
+.sign-up-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.title {
+  text-transform: uppercase;
+  color: #4f86b5;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+.sign-up-form {
+  margin-top: 1.2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  position: relative;
+}
+
+.sign-up-form::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 300px;
+  position: absolute;
+  right: -5rem;
+  top: -2rem;
+  background-color: #eee;
+}
+
+.form-control {
+  width: 100%;
+  border-radius: 5px;
+  height: 2.4rem;
+  font-size: 0.9rem;
+  padding-left: 1rem;
+  border: #ccc 1px solid;
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: #aaa;
+}
+
+.btn {
+  border-radius: 5px;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  background-color: #4f86b5;
+  color: white;
+  align-self: flex-end;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  margin-top: 1.8rem;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.login-form {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 1.2rem;
+}
+.terms {
+  font-size: 0.9rem;
+  color: #787878;
+  margin-top: 3.2rem;
+}
+
+.error-container {
+  margin-top: 1.2rem;
+  list-style-type: none;
+}
+
+.error-item {
+  color: red;
+  font-size: 0.9rem;
+}
