@@ -233,6 +233,8 @@ function writeAppFile() {
   const appFile = `
 const { join } = require('path');
 const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const errorHandler = require('./middlewares/errorHandler');
 const app = express();
