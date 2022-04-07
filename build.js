@@ -183,9 +183,9 @@ const buildBoilerplate = project => {
                 child_process.execSync(command, {stdio: 'inherit'});
                 console.log('Installed react app!');
 
-                console.log('Building react app...');
-                const buildCommand = `cd ${project}/client && yarn build`;
-                child_process.execSync(buildCommand, {stdio: 'inherit'});
+                console.log('Installing react-router-dom...');
+                const reactRouterCommand = `cd ${project}/client && yarn add react-router-dom@4.3.1`;
+                child_process.execSync(reactRouterCommand, {stdio: 'inherit'});
                 openProject();
               } else {
                 publicFolders.forEach(folder => {
