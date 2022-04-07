@@ -4,9 +4,9 @@ const readline = require('readline');
 
 const basicProjectFiles = ['.env', '.gitignore', 'README.md', 'package.json'];
 
-const basicProjectFolders = ['src', 'public'];
-const srcFiles = ['server.js', 'app.js'];
-const srcfolders = [
+const basicProjectFolders = ['server', 'client'];
+const serverFiles = ['server.js', 'app.js'];
+const serverfolders = [
   'database',
   'controllers',
   'routes',
@@ -73,12 +73,8 @@ const buildBoilerplate = project => {
     fs.mkdirSync(`${project}/${folder}`);
   });
 
-  srcfolders.forEach(folder => {
-    fs.mkdirSync(`${project}/src/${folder}`);
-  });
-
-  publicFolders.forEach(folder => {
-    fs.mkdirSync(`${project}/public/${folder}`);
+  serverfolders.forEach(folder => {
+    fs.mkdirSync(`${project}/server/${folder}`);
   });
 
   //Build project files
@@ -88,10 +84,10 @@ const buildBoilerplate = project => {
     fs.writeFileSync(`${project}/${file}`, '', 'utf8');
   });
 
-  //Build src files
+  //Build server files
 
-  srcFiles.forEach(file => {
-    fs.writeFileSync(`${project}/src/${file}`, '', 'utf8');
+  serverFiles.forEach(file => {
+    fs.writeFileSync(`${project}/server/${file}`, '', 'utf8');
   });
 
   writeAppFile();
@@ -100,31 +96,31 @@ const buildBoilerplate = project => {
   //Build controller files
 
   controllerFiles.forEach(file => {
-    fs.writeFileSync(`${project}/src/controllers/${file}`, '', 'utf8');
+    fs.writeFileSync(`${project}/server/controllers/${file}`, '', 'utf8');
   });
 
   //Build middleware files
 
   middlewareFiles.forEach(file => {
-    fs.writeFileSync(`${project}/src/middlewares/${file}`, '', 'utf8');
+    fs.writeFileSync(`${project}/server/middlewares/${file}`, '', 'utf8');
   });
 
   //Build route files
 
   routeFiles.forEach(file => {
-    fs.writeFileSync(`${project}/src/routes/${file}`, '', 'utf8');
+    fs.writeFileSync(`${project}/server/routes/${file}`, '', 'utf8');
   });
 
   //Build error files
 
   errorFiles.forEach(file => {
-    fs.writeFileSync(`${project}/src/errors/${file}`, '', 'utf8');
+    fs.writeFileSync(`${project}/server/errors/${file}`, '', 'utf8');
   });
 
   //Build database files
 
   databaseFiles.forEach(file => {
-    fs.writeFileSync(`${project}/src/database/${file}`, '', 'utf8');
+    fs.writeFileSync(`${project}/server/database/${file}`, '', 'utf8');
   });
 
   writeBuildDatabaseFile();
@@ -133,16 +129,8 @@ const buildBoilerplate = project => {
   //Build test files
 
   testFiles.forEach(file => {
-    fs.writeFileSync(`${project}/src/tests/${file}`, '', 'utf8');
+    fs.writeFileSync(`${project}/server/tests/${file}`, '', 'utf8');
   });
-
-  //Build public files
-
-  publicFiles.forEach(file => {
-    fs.writeFileSync(`${project}/public/${file}`, '', 'utf8');
-  });
-
-  writeHTMLFile(project);
 
   //Build package.json
   const packageJson = {
@@ -151,10 +139,11 @@ const buildBoilerplate = project => {
     description: '',
     main: 'index.js',
     scripts: {
-      start: 'cross-env NODE_ENV=production node src/server.js',
-      dev: 'cross-env NODE_ENV=development nodemon src/server.js',
-      build: 'cross-env NODE_ENV=development node src/database/config/build.js',
+      start: 'cross-env NODE_ENV=production node server/server.js',
+      dev: 'cross-env NODE_ENV=development nodemon server/server.js',
+      build: 'cross-env NODE_ENV=development node server/database/config/build.js',
       test: 'jest',
+      'heroku-postbuild': 'cd client && npm install && npm run build',
     },
   };
 
@@ -186,18 +175,48 @@ const buildBoilerplate = project => {
             npmInstallPackages(packages);
             npmInstallDevPackages(devPackages);
             console.log('Done!');
-            openProject();
-          } else {
-            openProject();
+            rl.question('You want to install react? (y/n) ', answer => {
+              if (answer === 'y') {
+                // run npm create-react-app
+                console.log('Creating react app...');
+                const command = `cd ${project}/client && yarn create react-app .`;
+                child_process.execSync(command, {stdio: 'inherit'});
+                console.log('Installed react app!');
+
+                console.log('Building react app...');
+                const buildCommand = `cd ${project}/client && yarn build`;
+                child_process.execSync(buildCommand, {stdio: 'inherit'});
+                openProject();
+              } else {
+                publicFolders.forEach(folder => {
+                  fs.mkdirSync(`${project}/client/${folder}`);
+                });
+                //Build public files
+
+                publicFiles.forEach(file => {
+                  fs.writeFileSync(`${project}/client/${file}`, '', 'utf8');
+                });
+
+                writeHTMLFile(project);
+
+                openProject();
+              }
+            });
           }
         });
 
         // Open the project in visual studio code
         const openProject = () => {
-          console.log('Opening project...');
+          console.log(`
+          Thank you for using my boilerplate builder!
+          Done by, Abedalrahman Shamia
+          `);
           const command = `code ${project}`;
-          child_process.execSync(command, {stdio: 'inherit'});
-          rl.close();
+
+          setTimeout(() => {
+            child_process.execSync(command, {stdio: 'inherit'});
+            rl.close();
+          }, 1500);
         };
       });
     });
@@ -226,7 +245,7 @@ function writeServerfile() {
     start();
     `;
 
-  fs.writeFileSync(`${project}/src/server.js`, appFile, 'utf8');
+  fs.writeFileSync(`${project}/server/server.js`, appFile, 'utf8');
 }
 
 function writeAppFile() {
@@ -241,10 +260,18 @@ const app = express();
 app.use(cookieParser());
 app.disable('x-powered-by');
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(join(__dirname, '..', 'public')));
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
+
+
+if(process.env.NODE_ENV === 'production') {
+app.use(express.static(join(__dirname, '..', 'client', 'build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, '..', 'client', 'build', 'index.html'));
+});
+}
 
 
 app.use(errorHandler);
@@ -252,7 +279,7 @@ app.use(errorHandler);
 module.exports = app;
 `;
 
-  fs.writeFileSync(`${project}/src/app.js`, appFile, 'utf8');
+  fs.writeFileSync(`${project}/server/app.js`, appFile, 'utf8');
 }
 
 function writeConfigDatabaseFile() {
@@ -286,7 +313,7 @@ function writeConfigDatabaseFile() {
     
     module.exports = connection;
     `;
-  fs.writeFileSync(`${project}/src/database/config/connection.js`, connection, 'utf8');
+  fs.writeFileSync(`${project}/server/database/config/connection.js`, connection, 'utf8');
 }
 
 function writeBuildDatabaseFile() {
@@ -294,7 +321,7 @@ function writeBuildDatabaseFile() {
   const fs = require('fs');
   const connection = require('./connection');
   
-  const sqlFile = fs.readFileSync('./src/database/config/build.sql', 'utf8');
+  const sqlFile = fs.readFileSync('./server/database/config/build.sql', 'utf8');
   
   connection.query(sqlFile, (err, res) => {
     if (err) {
@@ -307,7 +334,7 @@ function writeBuildDatabaseFile() {
   connection.end();
  `;
 
-  fs.writeFileSync(`${project}/src/database/config/build.js`, build, 'utf8');
+  fs.writeFileSync(`${project}/server/database/config/build.js`, build, 'utf8');
 }
 
 function writeHTMLFile(project) {
@@ -321,12 +348,12 @@ function writeHTMLFile(project) {
         <link rel="stylesheet" href="./css/styles.css" />
       </head>
       <body>
-        <script src="./js/script.js"></script>
+        <script server="./js/script.js"></script>
       </body>
     </html>
     `;
 
-  fs.writeFileSync(`${project}/public/index.html`, htmlFile, 'utf8');
+  fs.writeFileSync(`${project}/client/index.html`, htmlFile, 'utf8');
 }
 
 function npmInstallPackages(packages) {
@@ -373,7 +400,7 @@ function writeCustomErrorFile() {
       module.exports = {createError};
       `;
 
-  fs.writeFileSync(`${project}/src/errors/customError.js`, errorFile, 'utf8');
+  fs.writeFileSync(`${project}/server/errors/customError.js`, errorFile, 'utf8');
 }
 
 function writeErrorHandlerFile() {
@@ -394,5 +421,5 @@ function writeErrorHandlerFile() {
   module.exports = errorHandler;
   `;
 
-  fs.writeFileSync(`${project}/src/middlewares/errorHandler.js`, errorHandler, 'utf8');
+  fs.writeFileSync(`${project}/server/middlewares/errorHandler.js`, errorHandler, 'utf8');
 }
