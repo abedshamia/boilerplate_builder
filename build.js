@@ -372,7 +372,7 @@ function npmInstallDevPackages(packages) {
 }
 rl.question('What is your project name? ', projectName => {
   console.log(`Creating project ${projectName}...`);
-  projectName = projectName.replace(/\s/g, '_');
+  projectName = projectName.replace(/\s/g, '_').toLowerCase();
   const command = `mkdir ${projectName}`;
   child_process.execSync(command, {stdio: 'inherit'});
 
