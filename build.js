@@ -46,11 +46,9 @@ const packages = [
   'cookie-parser',
   'cors',
   'compression',
-  'helmet',
-  'cross-env',
   'jsonwebtoken',
 ];
-const devPackages = ['nodemon', 'jest', 'supertest', 'eslint'];
+const devPackages = ['nodemon', 'jest', 'supertest', 'eslint', 'cross-env'];
 
 //Build .gitignore
 
@@ -252,7 +250,6 @@ function writeAppFile() {
   const appFile = `
 const { join } = require('path');
 const express = require('express');
-const helmet = require('helmet');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const errorHandler = require('./middlewares/errorHandler');
@@ -261,7 +258,6 @@ app.use(cookieParser());
 app.disable('x-powered-by');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(helmet());
 app.use(cors());
 
 
