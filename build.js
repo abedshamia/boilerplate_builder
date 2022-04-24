@@ -47,6 +47,7 @@ const packages = [
   'cors',
   'compression',
   'jsonwebtoken',
+  'express-async-errors',
 ];
 const devPackages = ['nodemon', 'jest', 'supertest', 'eslint', 'cross-env'];
 
@@ -222,10 +223,11 @@ const buildBoilerplate = project => {
 };
 
 function writeServerfile() {
-  const appFile = `require('dotenv').config();
-    const app = require('./app');
-    const connection = require('./database/config/connection');
+  const appFile = `import dotenv from 'dotenv';
+    import app from './app';
+    import connection from './database/config/connection';
     
+    dotenv.config();
     const PORT = process.env.PORT || 3001;
     
     const start = async () => {
@@ -248,12 +250,13 @@ function writeServerfile() {
 
 function writeAppFile() {
   const appFile = `
-const { join } = require('path');
-const express = require('express');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const errorHandler = require('./middlewares/errorHandler');
-const app = express();
+import { join } from 'path';
+import express, { Application } from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import errorHandler from './middlewares/errorHandler';
+
+const app: Application = express();
 app.use(cookieParser());
 app.disable('x-powered-by');
 app.use(express.urlencoded({ extended: false }));
@@ -272,7 +275,7 @@ app.get('*', (req, res) => {
 
 app.use(errorHandler);
 
-module.exports = app;
+export default app;
 `;
 
   fs.writeFileSync(`${project}/server/app.ts`, appFile, 'utf8');
@@ -280,10 +283,10 @@ module.exports = app;
 
 function writeConfigDatabaseFile() {
   const connection = `
-  const { Pool } = require("pg");
-    const { NODE_ENV, DATABASE_URL, DEV_DATABASE_URL, TEST_DATABASE_URL} = process.env;
-    let URL;
-    let SSL;
+  import { Pool } from 'pg';
+    const { NODE_ENV, DATABASE_URL, DEV_DATABASE_URL, TEST_DATABASE_URL}  = process.env;
+    let URL: string;
+    let SSL: boolean;
     
     switch (NODE_ENV) {
       case "development":
@@ -302,22 +305,23 @@ function writeConfigDatabaseFile() {
         throw new Error("NODE_ENV is not set");
     }
     
-    const connection = new Pool({
+    const connection: Pool = new Pool({
       connectionString: URL,
       ssl: SSL,
     });
     
-    module.exports = connection;
+    export default connection;
     `;
   fs.writeFileSync(`${project}/server/database/config/connection.ts`, connection, 'utf8');
 }
 
 function writeBuildDatabaseFile() {
-  const build = `require('dotenv').config();
-  const fs = require('fs');
-  const connection = require('./connection');
+  const build = `import dotenv from 'dotenv';
+  import fs from 'fs';
+  import connection from './connection';
   
-  const sqlFile = fs.readFileSync('./server/database/config/build.sql', 'utf8');
+  dotenv.config();
+  const sqlFile: string  = fs.readFileSync('./server/database/config/build.sql', 'utf8');
   
   connection.query(sqlFile, (err, res) => {
     if (err) {
@@ -393,7 +397,7 @@ function writeCustomErrorFile() {
         return error;
       };
       
-      module.exports = {createError};
+      export default createError;
       `;
 
   fs.writeFileSync(`${project}/server/errors/customError.ts`, errorFile, 'utf8');
@@ -414,7 +418,7 @@ function writeErrorHandlerFile() {
     }
   };
   
-  module.exports = errorHandler;
+  export default errorHandler;
   `;
 
   fs.writeFileSync(`${project}/server/middlewares/errorHandler.ts`, errorHandler, 'utf8');
