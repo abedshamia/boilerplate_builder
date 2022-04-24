@@ -5,7 +5,7 @@ const readline = require('readline');
 const basicProjectFiles = ['.env', '.gitignore', 'README.md', 'package.json'];
 
 const basicProjectFolders = ['server', 'client'];
-const serverFiles = ['server.js', 'app.js'];
+const serverFiles = ['server.ts', 'app.ts'];
 const serverfolders = [
   'database',
   'controllers',
@@ -20,22 +20,22 @@ const serverfolders = [
 ];
 
 const databaseFiles = [
-  'config/build.js',
+  'config/build.ts',
   'config/build.sql',
-  'config/connection.js',
-  'queries/queries.js',
+  'config/connection.ts',
+  'queries/queries.ts',
 ];
 
-const controllerFiles = ['index.js', 'userController.js', 'authController.js'];
+const controllerFiles = ['index.ts', 'userController.ts', 'authController.ts'];
 
-const middlewareFiles = ['verifyToken.js', 'errorHandler.js', 'index.js'];
+const middlewareFiles = ['verifyToken.ts', 'errorHandler.ts', 'index.ts'];
 
-const routeFiles = ['index.js', 'userRoutes.js', 'authRoutes.js'];
-const errorFiles = ['customError.js'];
+const routeFiles = ['index.ts', 'userRoutes.ts', 'authRoutes.ts'];
+const errorFiles = ['customError.ts'];
 
-const testFiles = ['database.test.js', 'routes.test.js'];
+const testFiles = ['database.test.ts', 'routes.test.ts'];
 const publicFolders = ['css', 'js', 'images'];
-const publicFiles = ['index.html', 'css/styles.css', 'js/script.js', 'images/logo.png'];
+const publicFiles = ['index.html', 'css/styles.css', 'js/script.ts', 'images/logo.png'];
 
 const packages = [
   'dotenv',
@@ -135,11 +135,11 @@ const buildBoilerplate = project => {
     name: project,
     version: '1.0.0',
     description: '',
-    main: 'index.js',
+    main: 'index.ts',
     scripts: {
-      start: 'cross-env NODE_ENV=production node server/server.js',
-      dev: 'cross-env NODE_ENV=development nodemon server/server.js',
-      build: 'cross-env NODE_ENV=development node server/database/config/build.js',
+      start: 'cross-env NODE_ENV=production node server/server.ts',
+      dev: 'cross-env NODE_ENV=development nodemon server/server.ts',
+      build: 'cross-env NODE_ENV=development node server/database/config/build.ts',
       test: 'jest',
       'heroku-postbuild': 'cd client && npm install && npm run build',
     },
@@ -243,7 +243,7 @@ function writeServerfile() {
     start();
     `;
 
-  fs.writeFileSync(`${project}/server/server.js`, appFile, 'utf8');
+  fs.writeFileSync(`${project}/server/server.ts`, appFile, 'utf8');
 }
 
 function writeAppFile() {
@@ -275,7 +275,7 @@ app.use(errorHandler);
 module.exports = app;
 `;
 
-  fs.writeFileSync(`${project}/server/app.js`, appFile, 'utf8');
+  fs.writeFileSync(`${project}/server/app.ts`, appFile, 'utf8');
 }
 
 function writeConfigDatabaseFile() {
@@ -309,7 +309,7 @@ function writeConfigDatabaseFile() {
     
     module.exports = connection;
     `;
-  fs.writeFileSync(`${project}/server/database/config/connection.js`, connection, 'utf8');
+  fs.writeFileSync(`${project}/server/database/config/connection.ts`, connection, 'utf8');
 }
 
 function writeBuildDatabaseFile() {
@@ -330,7 +330,7 @@ function writeBuildDatabaseFile() {
   connection.end();
  `;
 
-  fs.writeFileSync(`${project}/server/database/config/build.js`, build, 'utf8');
+  fs.writeFileSync(`${project}/server/database/config/build.ts`, build, 'utf8');
 }
 
 function writeHTMLFile(project) {
@@ -344,7 +344,7 @@ function writeHTMLFile(project) {
         <link rel="stylesheet" href="./css/styles.css" />
       </head>
       <body>
-        <script server="./js/script.js"></script>
+        <script server="./js/script.ts"></script>
       </body>
     </html>
     `;
@@ -396,7 +396,7 @@ function writeCustomErrorFile() {
       module.exports = {createError};
       `;
 
-  fs.writeFileSync(`${project}/server/errors/customError.js`, errorFile, 'utf8');
+  fs.writeFileSync(`${project}/server/errors/customError.ts`, errorFile, 'utf8');
 }
 
 function writeErrorHandlerFile() {
@@ -417,5 +417,5 @@ function writeErrorHandlerFile() {
   module.exports = errorHandler;
   `;
 
-  fs.writeFileSync(`${project}/server/middlewares/errorHandler.js`, errorHandler, 'utf8');
+  fs.writeFileSync(`${project}/server/middlewares/errorHandler.ts`, errorHandler, 'utf8');
 }
