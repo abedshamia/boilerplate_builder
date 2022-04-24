@@ -355,13 +355,13 @@ function writeHTMLFile(project) {
 function npmInstallPackages(packages) {
   console.log('Installing packages...');
 
-  const command = `cd ${project} && npm install ${packages.join(' ')} --save`;
+  const command = `cd ${project} && yarn add ${packages.join(' ')}`;
   child_process.execSync(command, {stdio: 'inherit'});
 }
 
 function npmInstallDevPackages(packages) {
   console.log('Installing dev packages...');
-  const command = `cd ${project} && npm install ${packages.join(' ')} --save-dev`;
+  const command = `cd ${project} && yarn add ${packages.join(' ')} -D`;
   child_process.execSync(command, {stdio: 'inherit'});
 
   console.log('Done!');
