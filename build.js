@@ -40,7 +40,6 @@ const publicFiles = ['index.html', 'css/styles.css', 'js/script.ts', 'images/log
 const packages = [
   'dotenv',
   'express',
-  'pg',
   'bcrypt',
   'joi',
   'cookie-parser',
@@ -48,6 +47,8 @@ const packages = [
   'compression',
   'jsonwebtoken',
   'express-async-errors',
+  'mongoose',
+  'mongodb',
 ];
 const devPackages = ['nodemon', 'jest', 'supertest', 'eslint', 'cross-env'];
 
