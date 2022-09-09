@@ -200,6 +200,8 @@ const buildBoilerplate = project => {
                 openProject();
               }
             });
+          } else {
+            openProject();
           }
         });
 
